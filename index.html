@@ -7,13 +7,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f7fa;
+            background: linear-gradient(to bottom, #f5f7fa, #e0e7f0);
             margin: 0;
             padding: 0;
         }
         .container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -21,9 +21,17 @@
         }
         h1, h2 {
             color: #333;
+            text-align: center;
         }
         .slider-container {
             margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        .slider-container img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
         }
         .slider {
             width: 100%;
@@ -44,45 +52,68 @@
         .button:hover {
             background-color: #45a049;
         }
+        .name-input {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .name-input input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Energie-audit Relatie-spel</h1>
+        <div class="name-input">
+            <input type="text" id="name1" placeholder="Naam Partner 1">
+            <input type="text" id="name2" placeholder="Naam Partner 2">
+        </div>
+        <p id="welcome-message" style="text-align: center; font-weight: bold; color: #555;"></p>
+
         <p>Reflecteer op de energie die je in je relatie investeert. Beoordeel elke categorie op een schaal van 1 tot 10.</p>
 
         <div id="categories">
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/clock.png" alt="Kwaliteitstijd">
                 <label for="kwaliteitstijd">Kwaliteitstijd:</label>
                 <input type="range" id="kwaliteitstijd" class="slider" min="1" max="10" value="5">
                 <span id="kwaliteitstijd-value">5</span>
             </div>
 
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/speech-bubble.png" alt="Communicatie">
                 <label for="communicatie">Communicatie:</label>
                 <input type="range" id="communicatie" class="slider" min="1" max="10" value="5">
                 <span id="communicatie-value">5</span>
             </div>
 
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/heart.png" alt="Fysieke Affectie">
                 <label for="fysieke-affectie">Fysieke Affectie:</label>
                 <input type="range" id="fysieke-affectie" class="slider" min="1" max="10" value="5">
                 <span id="fysieke-affectie-value">5</span>
             </div>
 
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/helping-hand.png" alt="Emotionele Ondersteuning">
                 <label for="emotionele-ondersteuning">Emotionele Ondersteuning:</label>
                 <input type="range" id="emotionele-ondersteuning" class="slider" min="1" max="10" value="5">
                 <span id="emotionele-ondersteuning-value">5</span>
             </div>
 
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/couple.png" alt="Gezamenlijke Activiteiten">
                 <label for="gezamenlijke-activiteiten">Gezamenlijke Activiteiten:</label>
                 <input type="range" id="gezamenlijke-activiteiten" class="slider" min="1" max="10" value="5">
                 <span id="gezamenlijke-activiteiten-value">5</span>
             </div>
 
             <div class="slider-container">
+                <img src="https://img.icons8.com/ios-filled/50/000000/lock.png" alt="Vertrouwen">
                 <label for="vertrouwen">Vertrouwen & Eerlijkheid:</label>
                 <input type="range" id="vertrouwen" class="slider" min="1" max="10" value="5">
                 <span id="vertrouwen-value">5</span>
@@ -104,6 +135,20 @@
             });
         });
 
+        document.getElementById('name1').addEventListener('input', updateWelcomeMessage);
+        document.getElementById('name2').addEventListener('input', updateWelcomeMessage);
+
+        function updateWelcomeMessage() {
+            const name1 = document.getElementById('name1').value;
+            const name2 = document.getElementById('name2').value;
+
+            const message = name1 && name2
+                ? `Welkom, ${name1} en ${name2}!`
+                : 'Vul beide namen in om een persoonlijke ervaring te krijgen.';
+
+            document.getElementById('welcome-message').textContent = message;
+        }
+
         function generateGraph() {
             const scores = Array.from(sliders).map(slider => ({
                 category: slider.id.replace(/-/g, ' '),
@@ -114,7 +159,6 @@
             graphDiv.innerHTML = '<h2>Resultaten:</h2>';
             graphDiv.innerHTML += '<ul>' + scores.map(score => `<li>${score.category}: ${score.value}</li>`).join('') + '</ul>';
 
-            // Save results to localStorage for potential later retrieval
             localStorage.setItem('auditResults', JSON.stringify(scores));
         }
 
@@ -131,5 +175,9 @@
             window.location.href = `mailto:?subject=Energie-investering Audit Resultaten&body=Hier zijn onze resultaten:%0A%0A${emailBody}`;
         }
     </script>
-</body>
+<footer style="text-align: center; margin-top: 20px; font-size: 12px; color: #777;">
+    &copy; 2024 Leon. Alle rechten voorbehouden.
+</footer>
+
+$1
 </html>
