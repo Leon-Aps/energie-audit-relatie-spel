@@ -27,14 +27,10 @@
             margin: 20px 0;
             display: flex;
             align-items: center;
-        }
-        .slider-container img {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
+            justify-content: space-between;
         }
         .slider {
-            width: 100%;
+            width: 70%;
         }
         .graph {
             margin-top: 30px;
@@ -63,7 +59,13 @@
             border-radius: 5px;
             margin: 0 5px;
         }
+        .conclusion {
+            margin-top: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -74,66 +76,128 @@
         </div>
         <p id="welcome-message" style="text-align: center; font-weight: bold; color: #555;"></p>
 
-        <p>Reflecteer op de energie die je in je relatie investeert. Beoordeel elke categorie op een schaal van 1 tot 10.</p>
+        <p>Evalueer samen de kwaliteit van jullie relatie door zeven kernaspecten te beoordelen. Ken voor elk aspect een score toe van 1 tot 10, en bespreek vervolgens waar jullie mogelijkheden zien voor verbetering en groei in jullie relatie.</p>
 
         <div id="categories">
             <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/clock.png" alt="Kwaliteitstijd">
-                <label for="kwaliteitstijd">Kwaliteitstijd:</label>
-                <input type="range" id="kwaliteitstijd" class="slider" min="1" max="10" value="5">
-                <span id="kwaliteitstijd-value">5</span>
+                <label for="respect">Respect:</label>
+                <input type="range" id="respect" class="slider" min="1" max="10" value="5">
+                <span id="respect-value">5</span>
             </div>
 
             <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/speech-bubble.png" alt="Communicatie">
-                <label for="communicatie">Communicatie:</label>
+                <label for="begrip">Begrip:</label>
+                <input type="range" id="begrip" class="slider" min="1" max="10" value="5">
+                <span id="begrip-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="vertrouwen">Vertrouwen:</label>
+                <input type="range" id="vertrouwen" class="slider" min="1" max="10" value="5">
+                <span id="vertrouwen-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="communicatie">Communicatie & Eerlijkheid:</label>
                 <input type="range" id="communicatie" class="slider" min="1" max="10" value="5">
                 <span id="communicatie-value">5</span>
             </div>
 
             <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/heart.png" alt="Fysieke Affectie">
                 <label for="fysieke-affectie">Fysieke Affectie:</label>
                 <input type="range" id="fysieke-affectie" class="slider" min="1" max="10" value="5">
                 <span id="fysieke-affectie-value">5</span>
             </div>
 
             <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/helping-hand.png" alt="Emotionele Ondersteuning">
                 <label for="emotionele-ondersteuning">Emotionele Ondersteuning:</label>
                 <input type="range" id="emotionele-ondersteuning" class="slider" min="1" max="10" value="5">
                 <span id="emotionele-ondersteuning-value">5</span>
             </div>
 
             <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/couple.png" alt="Gezamenlijke Activiteiten">
                 <label for="gezamenlijke-activiteiten">Gezamenlijke Activiteiten:</label>
                 <input type="range" id="gezamenlijke-activiteiten" class="slider" min="1" max="10" value="5">
                 <span id="gezamenlijke-activiteiten-value">5</span>
             </div>
-
-            <div class="slider-container">
-                <img src="https://img.icons8.com/ios-filled/50/000000/lock.png" alt="Vertrouwen">
-                <label for="vertrouwen">Vertrouwen & Eerlijkheid:</label>
-                <input type="range" id="vertrouwen" class="slider" min="1" max="10" value="5">
-                <span id="vertrouwen-value">5</span>
-            </div>
         </div>
 
-        <button class="button" onclick="generateGraph()">Toon Resultaten</button>
+        <canvas id="radarChart" width="400" height="400" style="margin-top: 30px;"></canvas>
+
+        <div class="conclusion" id="conclusion"></div>
+
         <button class="button" onclick="sendEmail()">Stuur Resultaten via E-mail</button>
 
-        <div class="graph" id="graph"></div>
+        <footer style="text-align: center; margin-top: 20px; font-size: 12px; color: #777;">
+            &copy; 2024 Leon. Alle rechten voorbehouden.
+        </footer>
     </div>
 
     <script>
         const sliders = document.querySelectorAll('.slider');
+        const radarChart = document.getElementById('radarChart').getContext('2d');
+        let chart;
 
         sliders.forEach(slider => {
             slider.addEventListener('input', function () {
                 document.getElementById(`${this.id}-value`).textContent = this.value;
+                updateChart();
+                generateConclusion();
             });
         });
+
+        function updateChart() {
+            const labels = Array.from(sliders).map(slider => slider.id.replace(/-/g, ' '));
+            const data = Array.from(sliders).map(slider => parseInt(slider.value));
+
+            if (chart) {
+                chart.data.datasets[0].data = data;
+                chart.update();
+            } else {
+                chart = new Chart(radarChart, {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Relatie Energieverdeling',
+                            data: data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scale: {
+                            ticks: {
+                                beginAtZero: true,
+                                max: 10
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function generateConclusion() {
+            const scores = Array.from(sliders).map(slider => ({
+                category: slider.id.replace(/-/g, ' '),
+                value: parseInt(slider.value)
+            }));
+
+            const lowest = scores.reduce((min, curr) => curr.value < min.value ? curr : min);
+
+            const conclusionDiv = document.getElementById('conclusion');
+            conclusionDiv.innerHTML = `
+                <h2>Conclusie:</h2>
+                <p>De laagste score is <strong>${lowest.category}</strong> met een score van <strong>${lowest.value}</strong>.</p>
+                <p><strong>Advies:</strong> Focus op het verbeteren van ${lowest.category.toLowerCase()}. Hier zijn enkele suggesties:</p>
+                <ul>
+                    <li>Plan samen activiteiten om meer ${lowest.category.toLowerCase()} te creëren.</li>
+                    <li>Praat open over wat jullie nodig hebben in deze categorie.</li>
+                    <li>Zet concrete stappen en evalueer regelmatig.</li>
+                </ul>
+            `;
+        }
 
         document.getElementById('name1').addEventListener('input', updateWelcomeMessage);
         document.getElementById('name2').addEventListener('input', updateWelcomeMessage);
@@ -149,35 +213,19 @@
             document.getElementById('welcome-message').textContent = message;
         }
 
-        function generateGraph() {
+        function sendEmail() {
             const scores = Array.from(sliders).map(slider => ({
                 category: slider.id.replace(/-/g, ' '),
                 value: slider.value
             }));
 
-            const graphDiv = document.getElementById('graph');
-            graphDiv.innerHTML = '<h2>Resultaten:</h2>';
-            graphDiv.innerHTML += '<ul>' + scores.map(score => `<li>${score.category}: ${score.value}</li>`).join('') + '</ul>';
-
-            localStorage.setItem('auditResults', JSON.stringify(scores));
-        }
-
-        function sendEmail() {
-            const scores = JSON.parse(localStorage.getItem('auditResults')) || [];
-
-            if (scores.length === 0) {
-                alert('Geen resultaten om te verzenden. Vul eerst de scores in.');
-                return;
-            }
-
             const emailBody = scores.map(score => `${score.category}: ${score.value}`).join('%0A');
 
             window.location.href = `mailto:?subject=Energie-investering Audit Resultaten&body=Hier zijn onze resultaten:%0A%0A${emailBody}`;
         }
-    </script>
-<footer style="text-align: center; margin-top: 20px; font-size: 12px; color: #777;">
-    &copy; 2024 Leon. Alle rechten voorbehouden.
-</footer>
 
-$1
+        updateChart();
+        generateConclusion();
+    </script>
+</body>
 </html>
