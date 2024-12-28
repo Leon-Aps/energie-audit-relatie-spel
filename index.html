@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energie-audit Relatie-spel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider {
+            width: 100%;
+        }
+        .graph {
+            margin-top: 30px;
+        }
+        .button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Energie-audit Relatie-spel</h1>
+        <p>Reflecteer op de energie die je in je relatie investeert. Beoordeel elke categorie op een schaal van 1 tot 10.</p>
+
+        <div id="categories">
+            <div class="slider-container">
+                <label for="kwaliteitstijd">Kwaliteitstijd:</label>
+                <input type="range" id="kwaliteitstijd" class="slider" min="1" max="10" value="5">
+                <span id="kwaliteitstijd-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="communicatie">Communicatie:</label>
+                <input type="range" id="communicatie" class="slider" min="1" max="10" value="5">
+                <span id="communicatie-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="fysieke-affectie">Fysieke Affectie:</label>
+                <input type="range" id="fysieke-affectie" class="slider" min="1" max="10" value="5">
+                <span id="fysieke-affectie-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="emotionele-ondersteuning">Emotionele Ondersteuning:</label>
+                <input type="range" id="emotionele-ondersteuning" class="slider" min="1" max="10" value="5">
+                <span id="emotionele-ondersteuning-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="gezamenlijke-activiteiten">Gezamenlijke Activiteiten:</label>
+                <input type="range" id="gezamenlijke-activiteiten" class="slider" min="1" max="10" value="5">
+                <span id="gezamenlijke-activiteiten-value">5</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="vertrouwen">Vertrouwen & Eerlijkheid:</label>
+                <input type="range" id="vertrouwen" class="slider" min="1" max="10" value="5">
+                <span id="vertrouwen-value">5</span>
+            </div>
+        </div>
+
+        <button class="button" onclick="generateGraph()">Toon Resultaten</button>
+        <button class="button" onclick="sendEmail()">Stuur Resultaten via E-mail</button>
+
+        <div class="graph" id="graph"></div>
+    </div>
+
+    <script>
+        const sliders = document.querySelectorAll('.slider');
+
+        sliders.forEach(slider => {
+            slider.addEventListener('input', function () {
+                document.getElementById(`${this.id}-value`).textContent = this.value;
+            });
+        });
+
+        function generateGraph() {
+            const scores = Array.from(sliders).map(slider => ({
+                category: slider.id.replace(/-/g, ' '),
+                value: slider.value
+            }));
+
+            const graphDiv = document.getElementById('graph');
+            graphDiv.innerHTML = '<h2>Resultaten:</h2>';
+            graphDiv.innerHTML += '<ul>' + scores.map(score => `<li>${score.category}: ${score.value}</li>`).join('') + '</ul>';
+
+            // Save results to localStorage for potential later retrieval
+            localStorage.setItem('auditResults', JSON.stringify(scores));
+        }
+
+        function sendEmail() {
+            const scores = JSON.parse(localStorage.getItem('auditResults')) || [];
+
+            if (scores.length === 0) {
+                alert('Geen resultaten om te verzenden. Vul eerst de scores in.');
+                return;
+            }
+
+            const emailBody = scores.map(score => `${score.category}: ${score.value}`).join('%0A');
+
+            window.location.href = `mailto:?subject=Energie-investering Audit Resultaten&body=Hier zijn onze resultaten:%0A%0A${emailBody}`;
+        }
+    </script>
+</body>
+</html>
